@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/support.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/logo.png') }}">
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init("S-kcOISNyK1m4KaMm"); // Reemplaza con tu User ID de EmailJS
+        })();
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            // Mostrar mensaje de copia
+            const copyMessage = document.getElementById('copy-message');
+            copyMessage.textContent = 'Email copied!';
+            copyMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                copyMessage.style.display = 'none';
+            }, 3000); // El mensaje desaparecerá después de 3 segundos
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const currentUserEmailLabel = document.getElementById('current-user-email');
+            currentUserEmailLabel.addEventListener('click', () => {
+                copyToClipboard(currentUserEmailLabel.textContent);
+            });
+        });
+    </script>
+    <style>
+        
+        /* Estilos para el sidebar móvil */
+        .sidebar-mobile {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .sidebar-mobile ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-mobile ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar-mobile a {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        /* Mostrar el botón de menú en dispositivos móviles */
+        .mobile-menu-button {
+            display: none;
+            position: absolute;
+            right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-button {
+                display: block;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar-mobile.open {
+                display: flex;
+            }
+            .user-menu {
+                display: none;
+            }
+    }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="mobile-menu-button">&#9776;</div>
+        <div class="search-bar">
+            <form id="search-form" action="/" method="get">
+                <input type="text" id="search-input" name="query" placeholder=" &#128269;  Enter a player name or team">
+                <button class="button" type="submit" style="background-color: transparent;">Search</button>
+            </form>
+        </div>
+        <div class="user-menu">
+            <span>{{ current_user.email }}</span>
+            <div class="dropdown">
+                <a href="#" id="logout">Logout</a>
+            </div>
+        </div>
+    </header>
+    <nav class="sidebar">
+        <img src="{{ url_for('static', filename='img/logo-remove.png') }}" alt="Logo">
+        <ul>
+            <li><a href="{{ url_for('rankings') }}">&#128202; Rankings</a></li>
+            <li><a href="{{ url_for('support') }}">&#127911; Support</a></li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-mobile" id="sidebar-mobile" style="text-align: center;">
+        
+        <img src="{{ url_for('static', filename='img/Galactikos White.png') }}" alt="Logo">
+        <ul>
+            <li><a href="{{ url_for('rankings') }}">&#128202; Rankings</a></li>
+            <li><a href="{{ url_for('support') }}">&#127911; Support</a></li>
+        </ul>
+        <form action="/logout" method="post">
+            <div class="user-menu-mobile">
+                <p>{{ current_user.email }}</p>
+                <button type="submit" style=" background-color: transparent; border-radius: 5px; color: white; padding: 10px;">Logout</button>
+            </div>
+        </form>
+    </div>
+    <div class="contact-form">
+        <h1>Contact Us</h1>
+        <h3>Send us a message</h3>
+        <form id="contact-form">
+            <div class="form-group">
+                <label for="full-name">Full Name</label>
+                <input type="text" id="full-name" name="full-name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Your Email Address:</label>
+                <label id="current-user-email" style="cursor: pointer;">{{ current_user.email }}</label>
+                <input type="email" id="email" name="email" required>
+                <div id="copy-message" style="display: none; color: green; font-size: 0.9em;"></div>
+            </div>
+            <div class="form-group">
+                <label for="club">Your Club</label>
+                <input type="text" id="club" name="club" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Why do you want to get in touch?</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            <div id="send-message" style="display: none; color: green; font-size: 0.9em;"></div><br>
+            <div class="button-group">
+                <button type="submit" class="send-button">Send</button>
+                <a href="{{ url_for('index') }}"><button type="button" class="back-button">Home</button></a>
+            </div>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script type="text/javascript">
+        document.getElementById('contact-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const serviceID = 'service_s4773id'; // Reemplaza con tu Service ID de EmailJS
+            const templateID = 'template_5ejqhwv'; // Reemplaza con tu Template ID de EmailJS
+            
+            const templateParams = {
+                to_name: document.getElementById('full-name').value, // o puedes configurarlo a quien quieras enviar el email
+                from_name: document.getElementById('full-name').value,
+                email: document.getElementById('email').value,
+                club: document.getElementById('club').value,
+                message: document.getElementById('message').value
+            };
+            
+            emailjs.send(serviceID, templateID, templateParams)
+                .then(function(response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    const sendMessage = document.getElementById('send-message');
+                    sendMessage.textContent = 'Message sent successfully!';
+                    sendMessage.style.display = 'block';
+                }, function(error) {
+                    console.log('FAILED...', error);
+                    const sendMessage = document.getElementById('send-message');
+                    sendMessage.textContent = 'Failed to send the message. Please try again.';
+                    sendMessage.style.display = 'block';
+                });
+        });
+    </script>
+</body>
+</html>

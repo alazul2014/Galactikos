@@ -1,0 +1,65 @@
+.team-squad {
+    margin-left: 0;
+}
+th {
+    padding: 10px;
+    padding-left: 25px;
+}
+td {
+    padding: 5px;
+    
+}
+
+.player_name {
+    text-align: left;
+    text-decoration: none;
+} 
+
+.team-squad td a {
+    color: inherit; /* Usa el color heredado del texto */
+    text-decoration: none; /* Quita el subrayado */
+}
+
+
+.td:hover {
+    background-color: #f1f1f1;
+}
+
+
+@media screen and (max-width: 768px) {
+    .team-squad {
+        width: 100%;
+        border: none;
+    }
+
+    .team-squad thead {
+        display: none; /* Ocultar encabezados de columna en móviles */
+    }
+
+    .team-squad tr {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .team-squad td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border: none;
+        border-bottom: 1px solid #ddd;
+        position: relative;
+        text-align: left;
+    }
+
+    .team-squad td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #333;
+    }
+
+    .team-squad td a {
+        text-decoration: none;
+    }
+}

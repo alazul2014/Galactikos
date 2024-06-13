@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactikos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/team.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/results.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/Galactikos White.png') }}" type="image/x-icon">
+    <style>
+        /* Estilos para el sidebar móvil */
+        .sidebar-mobile {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .sidebar-mobile ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-mobile ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar-mobile a {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        /* Mostrar el botón de menú en dispositivos móviles */
+        .mobile-menu-button {
+            display: none;
+            position: absolute;
+            right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-button {
+                display: block;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar-mobile.open {
+                display: flex;
+            }
+            .user-menu {
+                display: none;
+            }
+        }
+
+        /* Loader styles */
+        #loader {
+            display: none; /* Initially hidden */
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Blur effect */
+        #content.blur {
+            filter: blur(5px);
+            pointer-events: none;
+        }
+
+        /* Overlay to darken the background */
+        #overlay {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Styles for contact form */
+        .contact-form {
+            max-width: 450px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff; /* Blanco */
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-form h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .send-button {
+            background-color: #28a745; /* Verde */
+            color: #ffffff; /* Blanco */
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 250px;
+        }
+
+        .send-button:hover {
+            background-color: #218838; /* Verde más oscuro */
+        }
+
+        .back-button {
+            color: black; /* Blanco */
+            border-color: black;
+            background-color: transparent;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-left: 10px;
+            width: 150px;
+        }
+
+        .back-button:hover {
+            background-color: #23272b; /* Negro más oscuro */
+            border: none;
+            color: white;
+        }
+
+        .message-status {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .message-success {
+            color: green;
+        }
+
+        .message-error {
+            color: red;
+        }
+
+        .contact-button {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            background: linear-gradient(to right, #217C7E, #020808);
+            color: white;
+        }
+
+        /* Styles for the player list */
+        .player-list {
+            margin: 20px 0;
+        }
+
+        .player-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .player-list ul li {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .player-list ul li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+    <script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){
+            emailjs.init("S-kcOISNyK1m4KaMm"); // Reemplaza TU_USER_ID con tu User ID de EmailJS
+        })();
+    </script>
+</head>
+<body>
+    <div id="overlay"></div>
+    <div id="loader"></div>
+
+    <header class="header">
+        <div class="mobile-menu-button">&#9776;</div>
+        <div class="search-bar">
+            <form id="search-form" action="/" method="get">
+                <input type="text" id="search-input" name="query" placeholder=" &#128269;  Enter a player name or team">
+                <button class="button" type="submit" style="background-color: transparent;">Search</button>
+            </form>
+        </div>
+        <div class="user-menu">
+            <span>{{ current_user.email }}</span>
+            <div class="dropdown">
+                <a href="#" id="logout">Logout</a>
+            </div>
+        </div>
+    </header>
+    <nav class="sidebar">
+        <img src="{{ url_for('static', filename='img/logo-remove.png') }}" alt="Logo">
+        <ul>
+            <li><a href="{{ url_for('rankings') }}">&#128202; Rankings</a></li>
+            <li><a href="{{ url_for('support') }}">&#127911; Support</a></li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-mobile" id="sidebar-mobile" style="text-align: center;">
+        <img src="{{ url_for('static', filename='img/Galactikos White.png') }}" alt="Logo">
+        <ul>
+            <li><a href="{{ url_for('rankings') }}">&#128202; Rankings</a></li>
+            <li><a href="{{ url_for('support') }}">&#127911; Support</a></li>
+        </ul>
+        <form action="/logout" method="post">
+            <div class="user-menu-mobile">
+                <p>{{ current_user.email }}</p>
+                <button type="submit" style="background-color: transparent; border-radius: 5px; color: white; padding: 10px;">Logout</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="content">
+        <section class="main">
+            {% if results %}
+                {% if tipo_busqueda == 'player' %}
+                    {% if results|length > 1 %}
+                    <div class="player-list">
+                        <table class="team-squad">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Player Name</th>
+                                    <th>Team</th>
+                                    <th>Rating</th>
+                                    <th>Games Played</th>
+                                    <th>Goals</th>
+                                    <th>Assists</th>
+                                    <th>% Games Player of the Match</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in results %}
+                                    <tr class="td">
+                                        <td class="number" data-label="">{{ loop.index }}.</td>
+                                        <td class="player_name" data-label="Player Name"><a href="/?query={{ result['Player Name'] }}">{{ result['Player Name'] }}</a></td>
+                                        <td data-label="Team"><a href="/?query={{ result.Team }}">{{ result.Team }}</a></td>
+                                        <td data-label="Rating">{{ result.RATING }}</td>
+                                        <td data-label="Games Played">{{ result.Games }}</td>
+                                        <td data-label="Goals">{{ result.Goals }}</td>
+                                        <td data-label="Assists">{{ result.Assists }}</td>
+                                        <td data-label="Games Player of the Match">
+                                            {{ result['Total Games Player of the Match'] }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    {% else %}
+                        {% set result = results[0] %}
+                        <button class="contact-button" id="contact-button"> Request More Player Information</button>
+                        <div id="contact-form" class="contact-form" style="display: none;">
+                            <h2>Request More <br> Player Information</h2>
+                            <form id="player-contact-form">
+                                <div class="form-group">
+                                    <label for="player-name">Player Name:</label>
+                                    <input type="text" id="player-name" name="player_name" value="{{ result['Player Name'] }}" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-email">Email:</label>
+                                    <input type="email" id="user-email" name="email" value="{{ current_user.email }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="user-name">Your Name:</label>
+                                    <input type="text" id="user-name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="message">Message:</label>
+                                    <textarea id="message" name="message" rows="4" required></textarea>
+                                </div>
+                                <div class="button-group">
+                                    <button type="submit" class="send-button">Send</button>
+                                    <a href="{{ url_for('index') }}"><button type="button" class="back-button">Home</button></a>
+                                </div>
+                                <div id="message-status" class="message-status"></div>
+                            </form>
+                        </div>
+                        <section class="principal">
+                            <div class="first_name">
+                                <h1>{{ result['Player Name'] }}</h1>
+                                <h2>{{ result.Team }}</h2>
+                            </div>
+                            <div class="tier">
+                                <p>{{ result.League }} - Tier {{ result.Tier }}</p>
+                            </div>
+                            <div class="ranked">
+                                <div class="p_ranked">
+                                    <p>{{ result['Male/Female'] }}</p>
+                                </div>
+                                {% if result['Hidden Gem'] == 1 %}
+                                    <p class="p_hidden">Hidden Gem</p>
+                                {% endif %}
+                            </div>
+                            <div class="second_rating">
+                                <h1>{{ result.RATING }}</h1>
+                                <h3>Galactikos Rating</h3>
+                            </div>
+                        </section>
+
+                        <section class="appearances">
+                            <h1>Appearances</h1>
+                            <div class="column">
+                                <div class="second_appearances">
+                                    <h3>Appearances</h3>
+                                    <p>{{ result.Appeared }} games</p>
+                                    <h2>{{ result['% Appeared'] }} of team's games</h2>
+                                </div>
+                                <div class="started">
+                                    <h3>Started</h3>
+                                    <p>{{ result.Started }} games</p>
+                                    <h2>{{ result['% Games Player of the Match'] }} of games played</h2>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="captained">
+                                    <h3>Captained</h3>
+                                    <p>{{ result.Captain }} games</p>
+                                    <h2>{{ result['% Came as a sub'] }} of team's games</h2>
+                                </div>
+                                <div class="came">
+                                    <h3>Came as Sub</h3>
+                                    <p>{{ result['Bench Used'] }} games</p>
+                                    <h2>{{ result['% Games Player of the Match'] }} of games played</h2>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="offensive">
+                            <h1>Offensive Contribution</h1>
+                            <div class="column">
+                                <div class="goals">
+                                    <h3>Goals</h3>
+                                    <p>{{ result.Goals }} goals</p>
+                                    <h2>{{ result['% Teams goals'] }} of team's goals</h2>
+                                </div>
+                                <div class="assists">
+                                    <h3>Assists</h3>
+                                    <p>{{ result.Assists }} assists</p>
+                                    <h2>{{ result['% Teams Assists'] }} of team's assists</h2>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="ga">
+                                    <h3>G+A</h3>
+                                    <p>{{ result['G+A P90'] }} G+A</p>
+                                    <h2>{{ result['% Teams G+A'] }} of team's G+A</h2>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="mvp">
+                            <h1>MVP Analysis</h1>
+                            <div class="column">
+                                <div class="mvp_player">
+                                    <h3>MVP</h3>
+                                    <p>{{ result['Player of the Match'] }} times</p>
+                                    <h2>{{ result['% Games Player of the Match'] }} of games played</h2>
+                                </div>
+                                <div class="opp_mvp">
+                                    <h3>Opp. MVP</h3>
+                                    <p>{{ result['Oppo. Player of the Match'] }} times</p>
+                                    <h2>{{ result['% Games Player of the Match'] }} of games played</h2>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="disciplinary">
+                            <h1>Disciplinary</h1>
+                            <div class="column">
+                                <div class="sin_bins">
+                                    <h3>Sin Bins</h3>
+                                    <p>{{ result['Sin Bins'] }} sin bins</p>
+                                    <h2>{{ result['% Teams Sin Bins'] }} of team's sin bins</h2>
+                                </div>
+                                <div class="yellows">
+                                    <h3>Yellows</h3>
+                                    <p>{{ result.Yellows }} yellows</p>
+                                    <h2>{{ result['% Teams Yellows'] }} of team's yellows</h2>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="reds">
+                                    <h3>Reds</h3>
+                                    <p>{{ result.Reds }} reds</p>
+                                    <h2>{{ result['% Teams Reds']}} of team's reds</h2>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="p90">
+                            <h1>P90 Analysis</h1>
+                            <div class="column">
+                                <div class="goals_p90">
+                                    <h3>Goals P90</h3>
+                                    <p>{{ result['Goals P90'] }} goals P90</p>
+                                </div>
+                                <div class="assists_p90">
+                                    <h3>Assists P90</h3>
+                                    <p>{{ result['Assists  P90'] }} assists P90</p>
+                                </div>
+                                <div class="ga_p90">
+                                    <h3>G+A P90</h3>
+                                    <p>{{ result['G+A P90'] }} G+A P90</p>
+                                </div>
+                            </div>
+                            <div class="column">
+                                <div class="sin_bins_p90">
+                                    <h3>Sin Bins P90</h3>
+                                    <p>{{ result['Sin Bins P90'] }} sin bins P90</p>
+                                </div>
+                                <div class="yellows_p90">
+                                    <h3>Yellows P90</h3>
+                                    <p>{{ result['Yellows P90'] }} yellows P90</p>
+                                </div>
+                                <div class="reds_p90">
+                                    <h3>Reds P90</h3>
+                                    <p>{{ result['Reds P90'] }} reds P90</p>
+                                </div>
+                            </div>
+                        </section>
+                    {% endif %}
+                {% elif tipo_busqueda == 'team' %}
+                    {% set team_info = results[0] %}
+                    <section class="team-info">
+                        <div class="team-header">
+                            <div class="team-details">
+                                <h1>{{ team_info.Team }}</h1>
+                                <p>{{ team_info.League }} · Tier {{ team_info.Tier }}</p>
+                            </div>
+                        </div>
+                        <h2>Squad</h2>
+                        <table class="team-squad">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Rating</th>
+                                    <th>Games Played</th>
+                                    <th>Goals</th>
+                                    <th>Assists</th>
+                                    <th>% Games Player of the Match</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in results %}
+                                    <tr class="td">
+                                        <td class="number" data-label=""> {{ loop.index }}.</td>
+                                        <td class="player_name" data-label="Player Name"><a href="#" class="player-link">{{ result['Player Name'] }}</a></td>
+                                        <td data-label="Rating">{{ result.RATING }}</td>
+                                        <td data-label="Games Played">{{ result.Games }}</td>
+                                        <td data-label="Goals">{{ result.Goals }}</td>
+                                        <td data-label="Assists">{{ result.Assists }}</td>
+                                        <td data-label="Games Player of the Match">
+                                            {{ result['Total Games Player of the Match'] }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </section>
+                {% endif %}
+            {% else %}
+                <p>Player or Team not found</p>
+            {% endif %}
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar el loader y el overlay al cargar la página
+            const loader = document.getElementById('loader');
+            const overlay = document.getElementById('overlay');
+            const content = document.getElementById('content');
+
+            function showLoader() {
+                loader.style.display = 'block';
+                overlay.style.display = 'block';
+                content.classList.add('blur');
+            }
+
+            function hideLoader() {
+                loader.style.display = 'none';
+                overlay.style.display = 'none';
+                content.classList.remove('blur');
+            }
+
+            // Mostrar el loader al inicio
+            showLoader();
+
+            // Ocultar el loader después de 5 segundos o cuando todos los datos hayan cargado
+            setTimeout(hideLoader, 5000);
+
+            window.addEventListener('load', function() {
+                hideLoader();
+            });
+
+            // Añadir evento de envío de formulario
+            document.getElementById('search-form').addEventListener('submit', function() {
+                showLoader();
+            });
+
+            // Mostrar el formulario de contacto
+            const contactButton = document.getElementById('contact-button');
+            const contactForm = document.getElementById('contact-form');
+
+            if (contactButton) {
+                contactButton.addEventListener('click', function() {
+                    contactForm.style.display = 'block';
+                    contactButton.style.display = 'none';
+                });
+            }
+
+            // Función para enviar el correo electrónico usando EmailJS
+            function sendEmail(event) {
+                event.preventDefault();
+
+                // Mostrar el loader al enviar el formulario
+                showLoader();
+
+                const serviceID = 'service_s4773id'; 
+                const templateID = 'template_hbtm6bh'; 
+
+                const templateParams = {
+                    player_name: document.getElementById('player-name').value,
+                    email: document.getElementById('user-email').value,
+                    name: document.getElementById('user-name').value,
+                    message: document.getElementById('message').value
+                };
+
+                emailjs.send(serviceID, templateID, templateParams)
+                    .then(function(response) {
+                        console.log('SUCCESS!', response.status, response.text);
+                        const statusMessage = document.getElementById('message-status');
+                        statusMessage.textContent = 'Message sent successfully!';
+                        statusMessage.className = 'message-status message-success';
+                        hideLoader();
+                        document.getElementById('player-contact-form').reset();
+                    }, function(error) {
+                        console.log('FAILED...', error);
+                        const statusMessage = document.getElementById('message-status');
+                        statusMessage.textContent = 'Failed to send the message. Please try again.';
+                        statusMessage.className = 'message-status message-error';
+                        hideLoader();
+                    });
+            }
+
+            // Asignar la función de envío al formulario
+            const contactFormElement = document.getElementById('player-contact-form');
+            if (contactFormElement) {
+                contactFormElement.addEventListener('submit', sendEmail);
+            }
+        });
+
+        
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/login.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    <div class="login-container">
+        <img class="logo" src="{{ url_for('static', filename='img/Galactikos White.png') }}" alt="Galactikos White.png" style="margin-left: 85px; margin-bottom: 20px;">
+        <img class="logo-remove" src="{{ url_for('static', filename='img/logo-remove.png') }}" alt="Galactikos logo-remove.png" style="margin-left: 8vh; margin-bottom: 20px; display: none;">
+        <div class="login-box">
+            <h2 class="login-title">Welcome!</h2>
+            <form action="#" class="login-form" id="login-form">
+                <div class="input-group">
+                    <input type="text" id="username" name="username" required>
+                    <label for="username">Email</label>
+                    <div id="username-error" class="error-message"></div>
+                </div>
+                <div class="input-group">
+                    <input type="password" id="password" name="password" required>
+                    <label for="password">Password</label>
+                    <div id="password-error" class="error-message"></div>
+                </div>
+                <button type="submit" class="login-button">Login</button>
+                <div id="form-error" class="error-message"></div>
+                <div id="form-success" class="success-message"></div>
+            </form>
+            <div class="login-footer">
+                <div>
+                    <span>Don't have an account?</span>
+                    <a href="{{ url_for('sign_up') }}" class="signup-link">Sign Up</a>
+                    <br><br>
+                    <span>Forgot your password?</span>
+                    <a href="{{ url_for('forgot_password') }}" class="forgot-password-link">Reset Password</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

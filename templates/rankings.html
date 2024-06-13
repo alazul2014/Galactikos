@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galactikos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/team.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/results.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <style>
+        .main-content {
+            flex: 1;
+            margin-left: 220px; /* Deja espacio para la barra lateral */
+            box-sizing: border-box;
+        }
+
+        .filter-container {
+            width: 300px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            height: calc(100vh - 99px); /* Ajustar altura para no superponerse con el header */
+            box-sizing: border-box;
+            position: fixed;
+            right: 0;
+            top: 99px; 
+            overflow-y: auto;
+        }
+
+        /* Ocultar la barra de desplazamiento en navegadores Webkit (Chrome, Safari) */
+        .filter-container::-webkit-scrollbar {
+            width: 0px;
+            background: transparent; /* opcional, para quitar cualquier fondo */
+        }
+
+        /* Ocultar la barra de desplazamiento en Firefox */
+        .filter-container {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        }
+
+        .filter-container label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .filter-container input,
+        .filter-container select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .filter-container .input-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-container .input-group input {
+            width: 75%;
+        }
+        
+        
+
+        .filter-container button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .filter-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .table-container {
+            margin-right: 320px; /* Deja espacio para el filtro en el lateral derecho */
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        td {
+            background-color: white;
+        }
+
+        th {
+            background-color: #f8f8f8;
+        }
+
+        .clickable {
+            text-align: left;
+            text-decoration: none;
+            color: inherit;
+            cursor: pointer;
+        }
+
+        .clickable:hover {
+            text-decoration: none;
+            background-color: #f1f1f1; /* O cualquier color que desees para el hover */
+        }
+
+        .team-squad td a {
+            color: inherit; /* Usa el color heredado del texto */
+            text-decoration: none; /* Quita el subrayado */
+        }
+
+        .td:hover {
+            background-color: #f1f1f1;
+        }
+
+        .sidebar-mobile {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .sidebar-mobile ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-mobile ul li {
+            margin: 10px 0;
+        }
+
+        .sidebar-mobile a {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+        }
+
+        /* Mostrar el botón de menú en dispositivos móviles */
+        .mobile-menu-button {
+            display: none;
+            position: absolute;
+            right: 10px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-button {
+                display: block;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .sidebar-mobile.open {
+                display: flex;
+            }
+            .user-menu {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .team-squad {
+                width: 100%;
+                border: none;
+            }
+
+            .team-squad thead {
+                display: none; /* Ocultar encabezados de columna en móviles */
+            }
+
+            .team-squad tr {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 10px;
+                border-bottom: 2px solid #ddd;
+            }
+
+            .team-squad td {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                border: none;
+                border-bottom: 1px solid #ddd;
+                position: relative;
+                text-align: left;
+            }
+
+            .team-squad td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: #333;
+            }
+
+            .team-squad td a {
+                text-decoration: none;
+            }
+
+            .main-content {
+                margin-left: 0; /* Elimina el margen izquierdo en móviles */
+            }
+
+            .table-container {
+                margin-right: 0; /* Elimina el margen derecho en móviles */
+            }
+
+            .filter-container {
+                width: 100%; /* Asegura que el filtro ocupe el ancho completo en móviles */
+                height: auto;
+                position: relative;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="mobile-menu-button">&#9776;</div>
+        <div class="search-bar">
+            <form id="search-form" action="/" method="get">
+                <input type="text" id="search-input" name="query" placeholder=" &#128269;  Enter a player name or team">
+                <button class="button" type="submit" style="background-color: transparent;">Search</button>
+            </form>
+        </div>
+        <div class="user-menu">
+            <span>{{ current_user.email }}</span>
+            <div class="dropdown">
+                <a href="#" id="logout">Logout</a>
+            </div>
+        </div>
+    </header>
+    <nav class="sidebar">
+        <img src="{{ url_for('static', filename='img/logo-remove.png') }}" alt="Logo">
+        <ul>
+            <li><a href="{{ url_for('rankings') }}">&#128202; Rankings</a></li>
+            <li><a href="{{ url_for('support') }}">&#127911; Support</a></li>
+        </ul>
+    </nav>
+
+    <div class="sidebar-mobile" id="sidebar-mobile" style="text-align: center;">
+        <img src="{{ url_for('static', filename='img/logo-remove.png') }}" alt="Logo">
+        <ul>
+            <li><a href="{{ url_for('rankings') }}">&#128202; Rankings</a></li>
+            <li><a href="{{ url_for('support') }}">&#127911; Support</a></li>
+        </ul>
+        <form action="/logout" method="post">
+            <div class="user-menu-mobile">
+                <p>{{ current_user.email }}</p>
+                <button type="submit" style=" background-color: transparent; border-radius: 5px; color: white; padding: 10px;">Logout</button>
+            </div>
+        </form>
+    </div>
+    <div class="main-content">
+        <div class="table-container">
+            <div id="results">
+                {% if results %}
+                    <table class="team-squad">
+                        <thead>
+                            <tr>
+                                <th>Player Name</th>
+                                <th>Rating</th>
+                                <th>Games Played</th>
+                                <th>Goals</th>
+                                <th>Assists</th>
+                                <th>Player of the Match</th>
+                                <th>Team</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                                <tr class="td">
+                                    <td class="clickable" data-label="Player Name" onclick="searchPlayer('{{ result['Player Name'] }}')">{{ result['Player Name'] }}</td>
+                                    <td data-label="Rating">{{ result.RATING }}</td>
+                                    <td data-label="Games Played">{{ result.Games }}</td>
+                                    <td data-label="Goals">{{ result.Goals }}</td>
+                                    <td data-label="Assists">{{ result.Assists }}</td>
+                                    <td data-label="Player of the Match">{{ result['Total Games Player of the Match'] }}</td>
+                                    <td class="clickable" data-label="Team" onclick="searchTeam('{{ result.Team }}')">{{ result.Team }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No results found.</p>
+                {% endif %}
+                <div class="pagination">
+                    {% if page > 1 %}
+                        <a href="?{% for key, value in request.args.items() if key != 'page' %}{{ key }}={{ value }}&{% endfor %}page={{ page - 1 }}">Previous</a>
+                    {% else %}
+                        <a class="disabled">Previous</a>
+                    {% endif %}
+                    {% if page > 1 %}
+                        <a href="?{% for key, value in request.args.items() if key != 'page' %}{{ key }}={{ value }}&{% endfor %}page={{ page - 1 }}">{{ page - 1 }}</a>
+                    {% endif %}
+                    <a href="?{% for key, value in request.args.items() if key != 'page' %}{{ key }}={{ value }}&{% endfor %}page={{ page }}">{{ page }}</a>
+                    {% if page < total_pages %}
+                        <a href="?{% for key, value in request.args.items() if key != 'page' %}{{ key }}={{ value }}&{% endfor %}page={{ page + 1 }}">{{ page + 1 }}</a>
+                    {% endif %}
+                    {% if page < total_pages %}
+                        <a href="?{% for key, value in request.args.items() if key != 'page' %}{{ key }}={{ value }}&{% endfor %}page={{ page + 1 }}">Next</a>
+                    {% else %}
+                        <a class="disabled">Next</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="filter-container">
+        <form id="filter-form" action="/rankings" method="get">
+            <div class="input-group">
+                <div>
+                    <label for="rating_min">Rating Min:</label>
+                    <input type="number" id="rating_min" name="rating_min" step="0.01" value="{{ filters.rating_min or '' }}">
+                </div>
+                <div>
+                    <label for="rating_max">Rating Max:</label>
+                    <input type="number" id="rating_max" name="rating_max" step="0.01" value="{{ filters.rating_max or '' }}">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <div>
+                    <label for="games_played_min">Games Played Min:</label>
+                    <input type="number" id="games_played_min" name="games_played_min" value="{{ filters.games_played_min or '' }}">
+                </div>
+                <div>
+                    <label for="games_played_max">Games Played Max:</label>
+                    <input type="number" id="games_played_max" name="games_played_max" value="{{ filters.games_played_max or '' }}">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <div>
+                    <label for="goals_min">Goals Min:</label>
+                    <input type="number" id="goals_min" name="goals_min" value="{{ filters.goals_min or '' }}">
+                </div>
+                <div>
+                    <label for="goals_max">Goals Max:</label>
+                    <input type="number" id="goals_max" name="goals_max" value="{{ filters.goals_max or '' }}">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <div>
+                    <label for="assists_min">Assists Min:</label>
+                    <input type="number" id="assists_min" name="assists_min" value="{{ filters.assists_min or '' }}">
+                </div>
+                <div>
+                    <label for="assists_max">Assists Max:</label>
+                    <input type="number" id="assists_max" name="assists_max" value="{{ filters.assists_max or '' }}">
+                </div>
+            </div>
+            
+            <label for="player_of_the_match">Player of the Match:</label>
+            <input style="width: 93%;" type="number" id="player_of_the_match" name="player_of_the_match" value="{{ filters.player_of_the_match or '' }}">
+            
+            <label for="team">Team:</label>
+            <select id="team" name="team">
+                <option value="">All</option>
+                {% for team in teams %}
+                    <option value="{{ team }}" {% if filters.team == team %}selected{% endif %}>{{ team }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="league">League:</label>
+            <select id="league" name="league">
+                <option value="">All</option>
+                {% for league in leagues %}
+                    <option value="{{ league }}" {% if filters.league == league %}selected{% endif %}>{{ league }}</option>
+                {% endfor %}
+            </select>
+            
+            <label for="tier">Tier:</label>
+            <select id="tier" name="tier">
+                <option value="">All</option>
+                {% for i in range(3, 12) %}
+                    <option value="{{ i }}" {% if filters.tier == i %}selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+                <option value="Youth" {% if filters.tier == "Youth" %}selected{% endif %}>Youth</option>
+            </select>
+
+            <label for="gender">Gender:</label>
+            <select id="gender" name="gender">
+                <option value="">All</option>
+                <option value="Male" {% if filters.gender == "Male" %}selected{% endif %}>Male</option>
+                <option value="Female" {% if filters.gender == "Female" %}selected{% endif %}>Female</option>
+            </select>
+
+            <label for="hidden_gem">Hidden Gems:</label>
+            <select id="hidden_gem" name="hidden_gem">
+                <option value="">All</option>
+                <option value="Yes" {% if filters.hidden_gem == "Yes" %}selected{% endif %}>Yes</option>
+                <option value="No" {% if filters.hidden_gem == "No" %}selected{% endif %}>No</option>
+            </select>
+
+            <button type="submit">Filter</button>
+            <button type="button" onclick="resetFilters()">Reset</button>
+        </form>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function searchPlayer(playerName) {
+            const searchInput = document.getElementById('search-input');
+            const searchForm = document.getElementById('search-form');
+            searchInput.value = playerName;
+            searchForm.submit();
+        }
+        
+        function searchTeam(teamName) {
+            const searchInput = document.getElementById('search-input');
+            const searchForm = document.getElementById('search-form');
+            searchInput.value = teamName;
+            searchForm.submit();
+        }
+
+        function resetFilters() {
+            const form = document.getElementById('filter-form');
+            form.reset();
+            window.location.href = "/rankings";
+        }
+    </script>
+</body>
+</html>

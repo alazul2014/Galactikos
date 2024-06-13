@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/sign_up.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" type="image/x-icon">
+    <style>
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+        }
+
+    </style>
+</head>
+<body>
+    <img src="{{ url_for('static', filename='img/Galactikos White.png') }}" alt="Galactikos White.png" style="margin-bottom: 20px;">
+    <div class="register-container">
+        <div class="register-box">
+            <h2 class="register-title">Create an Account</h2>
+            <form class="register-form" id="sign-up-form">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="input-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                    <div id="password-error" class="error-message"></div>
+                </div>
+                <div class="input-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" required>
+                    <div id="confirm-password-error" class="error-message"></div>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" name="terms" required>
+                    <label for="terms">I agree to the <a href="{{ url_for('terms_conditions') }}" class="terms-link">terms & conditions</a></label>
+                </div>
+                <button type="submit" class="register-button">Register</button>
+                <div id="form-success" class="success-message"></div>
+                <div id="form-error" class="error-message"></div>
+            </form>
+            <div class="register-footer">
+                <span>Already have an account?</span>
+                <a href="{{ url_for('login') }}" class="login-link">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="{{ url_for('static', filename='js/sign_up.js') }}"></script>
+</body>
+</html>

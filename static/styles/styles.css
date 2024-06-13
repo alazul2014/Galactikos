@@ -1,0 +1,274 @@
+/* Hacer el boton de log out que este acivo cuan se pulsa
+
+############################################################
+############################################################
+############################################################
+
+*/
+
+
+
+
+
+
+/* Mostrar el botón de menú en dispositivos móviles */
+.mobile-menu-button {
+    display: none;
+    position: absolute;
+    
+    right: 10px;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+@media (max-width: 768px) {
+    .mobile-menu-button {
+        display: block;
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .sidebar-mobile.open {
+        display: flex;
+    }
+    .user-menu {
+        display: none;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #efefef;
+    
+}
+
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+
+.user-menu {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.user-menu span {
+    margin-right: 10px;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: white;
+    color: black;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown a:hover {
+    background-color: #ddd;
+}
+
+.user-menu:hover .dropdown {
+    display: block;
+}
+
+
+
+
+
+.button {
+    text-align: center;
+    background-color: black;
+}
+
+table {
+    text-align: center;
+    margin-top: 15px;
+    margin-left: 35vh;
+}
+
+
+.header {
+    background: linear-gradient(to right, #217C7E, #020808);
+    color: white;
+    padding: 25px ;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+}
+
+/* Hidden Gem */
+
+.p_hidden {
+    padding: 10px;
+    width: 15vh;
+    border-radius: 15px;
+    background: linear-gradient(to right, #DDC57C , #AC8102 );
+
+   /* background: linear-gradient(to right, #f9d423, #ff4e50); */
+
+}
+
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    margin-left: 30vh;
+    
+}
+
+.search-bar input {
+    width: 260px;
+    height: 25px;
+}
+
+.search-bar input[type="text"] {
+    padding: 5px;
+    border: none;
+    border-radius: 5px;
+}
+
+.search-bar button {
+    padding: 5px 10px;
+    background-color: #007bff; /* Color del botón */
+    border: none;
+    border-radius: 5px;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+}
+
+.sidebar {
+    text-align: center;
+    background-color: #ffffff; /* Color de fondo de la barra lateral */
+    width: 200px; /* Ancho de la barra lateral */
+    height: 100vh; /* Altura total de la barra lateral */
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+
+.sidebar ul {
+    margin-top: 50%;
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 10px;
+}
+
+.sidebar ul li a {
+    color: #000; /* Color del texto del enlace */
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar ul li a:hover {
+    background-color: #f0f0f0; /* Cambia el color de fondo al pasar el ratón */
+    
+}
+
+
+@media screen and (max-width: 568px) {
+
+    #search-input {
+        width: 25px;
+        margin-left: -25px;
+    }
+
+    #search-form {
+        margin-right: -50px;
+
+    }
+
+}
+
+
+
+
+@media screen and (max-width: 768px) {
+    .search-bar {
+        margin: 10px; /* Cambia el margen para dispositivos móviles */
+    }
+    .sidebar {
+        display: none;
+    }
+
+    .header {
+        position: static;
+    }
+
+    #search-input {
+        width: auto;
+        margin-left: -25px;
+    }
+
+    #search-form {
+        margin-right: -50px;
+
+    }
+
+}
+
+
+@media screen and (max-width: 812px) {
+
+    #search-input {
+        width: auto;
+        margin-left: -25px;
+        width: 225px;
+    }
+
+    #search-form {
+        margin-right: -50px;
+
+    }
+
+}

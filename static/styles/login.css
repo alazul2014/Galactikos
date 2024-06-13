@@ -1,0 +1,125 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(to right, #217C7E, #020808);
+}
+
+.login-container {
+    max-width: 400px;
+    width: 100%;
+    padding: 20px;
+}
+
+.login-box {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-form .input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.login-form input {
+    width: 93%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.login-form label, .login-form input {
+    margin: 5px auto;
+}
+
+.login-form label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    
+    color: #999;
+    transition: top 0.3s, font-size 0.3s, color 0.3s;
+}
+
+
+
+.login-form input:focus + label,
+.login-form input:not(:placeholder-shown) + label {
+    top: -18px;
+    font-size: 13px;
+}
+
+
+.login-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signup-link:hover {
+    text-decoration: underline;
+}
+
+
+/* Styles error - input */
+
+.error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+.success-message {
+    color: green;
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+
+
+@media screen and (max-width: 768px) {
+
+    body {
+        background: none;
+        background-color: #f7f7f7;
+    }
+
+    .logo {
+        display: none;
+    }
+
+    .logo-remove {
+        display: flex;
+    }
+
+}
