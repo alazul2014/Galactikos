@@ -8,7 +8,7 @@ file_path = 'Scouting Data Base_Womens_Alvaro.xlsx'
 datos_excel = pd.read_excel(file_path, sheet_name='Rankings')
 raw_data = pd.read_excel(file_path, sheet_name='Raw data')
 
-# Asegurarse de que la columna 'Games' exista en 'Raw data'
+# Asegurarse de que la columna 'Games' exista en 'raw_data'
 if 'Games' not in raw_data.columns:
     raise ValueError("La columna 'Games' no existe en la hoja 'Raw data'")
 
@@ -21,7 +21,6 @@ columnas_a_convertir = ['% Games Player of the Match', '% Teams goals', '% Teams
 
 datos_excel['RATING'] = datos_excel['RATING'].apply(lambda x: f"{int(round(x * 100))}" if pd.notna(x) else x)
 
-
 # Convertir las columnas a formato de porcentaje y redondear a enteros
 for columna in columnas_a_convertir:
     if columna in datos_excel.columns:
@@ -32,15 +31,19 @@ columnas_a_redondear = ['Goals P90', 'Assists  P90', 'G+A P90', 'Sin Bins P90']
 for columna in columnas_a_redondear:
     if columna in datos_excel.columns:
         datos_excel[columna] = datos_excel[columna].apply(lambda x: f"{x:.2f}" if pd.notna(x) else x)
+
 def search_data(query):
     if not query:
         return {'tipo_busqueda': '', 'resultados': []}
 
-    if datos_excel['Player Name'].str.contains(query, case=False).any():
-        resultados = datos_excel[datos_excel['Player Name'].str.contains(query, case=False)]
+    # Crear una copia del DataFrame y llenar NaN con una cadena vacía para la búsqueda
+    datos_excel_filled = datos_excel.fillna('')
+
+    if datos_excel_filled['Player Name'].str.contains(query, case=False).any():
+        resultados = datos_excel_filled[datos_excel_filled['Player Name'].str.contains(query, case=False)]
         tipo_busqueda = 'player'
-    elif datos_excel['Team'].str.contains(query, case=False).any():
-        resultados = datos_excel[datos_excel['Team'].str.contains(query, case=False)]
+    elif datos_excel_filled['Team'].str.contains(query, case=False).any():
+        resultados = datos_excel_filled[datos_excel_filled['Team'].str.contains(query, case=False)]
         tipo_busqueda = 'team'
     else:
         return {'tipo_busqueda': '', 'resultados': []}
@@ -62,7 +65,6 @@ def search_data(query):
         'resultados': resultados_seleccionados.to_dict(orient='records')
     }
 
-    
 @excel_bp.route('/search', methods=['POST'])
 def search():
     query = request.form.get('query')
